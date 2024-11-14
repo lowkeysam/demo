@@ -6,11 +6,15 @@ import { MessageSquarePlus, X } from 'lucide-react';
 import { config } from '@/lib/sfconfig';
 
 interface FeedbackWidgetProps {
-    baseUrl?: string;
-  }
+  baseUrl?: string;
+  apiKey?: string;
+  projectId?: string;
+}
 
 const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ 
-  baseUrl = 'http://localhost:3001'
+  baseUrl = config.squashfeatureBaseUrl,
+  apiKey = config.squashfeatureApiKey,
+  projectId = config.squashfeatureProjectId
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState<'feature' | 'bug'>('feature');
@@ -25,28 +29,33 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
     setError(null);
 
     try {
-      const response = await fetch(`${baseUrl}/api/requests`, {
+      const origin = window.location.origin;
+      
+      const response = await fetch(`${baseUrl}/api/projects/self-hosted/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.squashfeatureApiKey}`,
+          'X-API-Key': apiKey,
+          'X-Project-Id': projectId,
+          'Origin': origin
         },
         body: JSON.stringify({
           type,
           title,
           description,
           metadata: {
-            source: 'widget'
+            source: 'widget',
+            origin
           }
         }),
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit feedback');
+        throw new Error(data.error || 'Failed to submit feedback');
       }
 
-      // Reset form on success
       setTitle('');
       setDescription('');
       setIsOpen(false);

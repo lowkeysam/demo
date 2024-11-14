@@ -1,8 +1,9 @@
 // lib/config.ts
 export const config = {
-  squashfeatureBaseUrl: process.env.NEXT_PUBLIC_SQUASHFEATURE_BASE_URL || 'http://localhost:3001',
   squashfeatureApiKey: process.env.NEXT_PUBLIC_SQUASHFEATURE_API_KEY || '',
-} as const;
+  squashfeatureBaseUrl: process.env.NEXT_PUBLIC_SQUASHFEATURE_BASE_URL || 'http://localhost:3001',
+  squashfeatureProjectId: process.env.NEXT_PUBLIC_SQUASHFEATURE_PROJECT_ID || ''
+};
 
 // Validate required environment variables
 if (!config.squashfeatureApiKey) {
@@ -11,4 +12,8 @@ if (!config.squashfeatureApiKey) {
 
 if (!config.squashfeatureBaseUrl) {
   throw new Error('NEXT_PUBLIC_SQUASHFEATURE_BASE_URL is required');
+}
+
+if (!config.squashfeatureProjectId) {
+  throw new Error('NEXT_PUBLIC_SQUASHFEATURE_PROJECT_ID is required');
 }

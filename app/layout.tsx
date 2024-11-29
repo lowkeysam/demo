@@ -31,7 +31,7 @@ export default function RootLayout({
         {children}
         <FeedbackWidget 
           apiKey="sq_8P5FP7MVBWQJ1QZ651DRFZEF719WUSI3"
-          projectSlug="your-project-slug"
+          projectId="your-project-slug"
           baseUrl="http://localhost:3001"  // Your main project's URL
         />
       </body>

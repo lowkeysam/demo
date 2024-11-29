@@ -2,7 +2,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import { MessageSquarePlus, X } from 'lucide-react';
+import { MessageSquarePlus, X, CheckCircle } from 'lucide-react';
 import { config } from '@/lib/sfconfig';
 
 interface FeedbackWidgetProps {
@@ -22,6 +22,14 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setError(null);
+    setType('feature');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,9 +64,15 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
         throw new Error(data.error || 'Failed to submit feedback');
       }
 
-      setTitle('');
-      setDescription('');
-      setIsOpen(false);
+      resetForm();
+      setShowSuccess(true);
+      
+      // Hide success message and close widget after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+        setIsOpen(false);
+      }, 3000);
+      
     } catch (error) {
       console.error('Error submitting feedback:', error);
       setError(error instanceof Error ? error.message : 'Failed to submit feedback');
@@ -76,6 +90,22 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
       >
         <MessageSquarePlus className="w-6 h-6" />
       </button>
+    );
+  }
+
+  if (showSuccess) {
+    return (
+      <div className="fixed bottom-4 right-4 w-96 bg-zinc-900 rounded-lg shadow-xl border border-zinc-700 p-6">
+        <div className="flex flex-col items-center text-center space-y-3">
+          <CheckCircle className="w-12 h-12 text-green-500" />
+          <h2 className="text-xl font-semibold text-white">Thank You!</h2>
+          <p className="text-zinc-300">
+            {type === 'feature' 
+              ? "Your feature request has been received. We appreciate your ideas for making our product better!"
+              : "Thanks for reporting this bug. Your feedback helps us improve the experience for everyone!"}
+          </p>
+        </div>
+      </div>
     );
   }
 
